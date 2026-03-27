@@ -1,0 +1,19 @@
+paths:
+  base_dir: "D:/GoogleDrive/exercises/PPRL_applications_for_evaluation/personal_pprl_bloom_filters"
+  
+  # Main folders
+  data_dir: "{base_dir}/data"
+  out_dir: "{base_dir}/model_output"
+  fig_dir: "{base_dir}/visualization"
+  notebooks_dir: "{base_dir}/pprl_notebooks"               
+  notebooks_executed_dir: "{base_dir}/notebooks_executed"  
+  
+  
+  
+  # Subfolders inside data_dir
+  raw_data_dir: "{data_dir}/raw"
+  processed_data_dir: "{data_dir}/processed"
+  synthetic_data_dir: "{data_dir}/synthetic"
+
+ # Subfolders inside out_dir
+  statsmodels: "{out_dir}/statsmodels" # Where models are saved.

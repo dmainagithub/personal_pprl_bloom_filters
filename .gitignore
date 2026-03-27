@@ -1,0 +1,65 @@
+
+###############################################
+# Python venv
+###############################################
+.venv/
+venv/
+env/
+
+###############################################
+# Data folders (never track)
+###############################################
+personal_pprl_bloom_filters/data/
+personal_pprl_bloom_filters/data/raw/
+personal_pprl_bloom_filters/data/processed/
+personal_pprl_bloom_filters/data/synthetic/
+
+###############################################
+# Model output folders (never track)
+###############################################
+personal_pprl_bloom_filters/model_output/
+personal_pprl_bloom_filters/model_output/statsmodels/
+
+###############################################
+# Notebooks executed (never track)
+###############################################
+personal_pprl_bloom_filters/notebooks_executed/
+
+###############################################
+# Figures / visualizations
+###############################################
+personal_pprl_bloom_filters/visualization/
+
+###############################################
+# Logs
+###############################################
+personal_pprl_bloom_filters/logs/
+*.log
+
+###############################################
+# Python cache & Jupyter checkpoints
+###############################################
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+*.pyo
+*.pyd
+
+###############################################
+# OS-specific files
+###############################################
+.DS_Store
+Thumbs.db
+
+###############################################
+# IDE/editor settings
+###############################################
+.vscode/
+.idea/
+
+
+
+# Important commands to remove from being tracked
+# git rm -r --cached .venv
+# git rm -r --cached notebooks_executed
+# git rm -r --cached data
