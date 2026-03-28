@@ -26,7 +26,7 @@ OUTPUT_DIR = paths["NOTEBOOKS_EXECUTED_DIR"]
 
 
 NOTEBOOKS = [
-    "00_synthetic_data_generation.ipynb",
+    # "00_synthetic_data_generation.ipynb",
     "01_data_preparation.ipynb",
     "02_bloom_filter_encoding.ipynb",
     "03_blocking_strategies.ipynb",
