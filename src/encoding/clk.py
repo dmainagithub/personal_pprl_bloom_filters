@@ -1,3 +1,5 @@
+from src.encoding.bloom import bloom_encode              # Bloom filter encoding
+
 # CLK = Cryptographic Long-term Key
 def clk_encode(record):
     """

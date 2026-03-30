@@ -1,3 +1,7 @@
+from src.matching.matcher import match_pairs
+from src.evaluation.evaluate import evaluate
+import pandas as pd
+
 def run_pipeline(df_A, df_B, true_matches,
                  encoder,
                  blocker,
@@ -22,7 +26,8 @@ def run_pipeline(df_A, df_B, true_matches,
         pairs, df_A, df_B, sim_func, threshold
     )
 
-    matches_df = pd.DataFrame(matches, columns=["i","j","sim"])
+    # matches_df = pd.DataFrame(matches, columns=["i","j","sim"]) # Old
+    matches_df = pd.DataFrame(matches)
 
     # ---------------------------------
     # 4. Evaluation
