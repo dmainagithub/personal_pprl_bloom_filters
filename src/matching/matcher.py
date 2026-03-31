@@ -50,29 +50,32 @@ def compare_pair(i, j, df_A, df_B, sim_func):
         print("COMPAIR-PAIRS: ", e, "i:", i, "j:", j)
         return None
 
-def auto_threshold(scores):
-    sims = [s for (_, _, s) in scores if s is not None and s > 0]
-    if len(sims) == 0:
-        return 0.0
-    return np.percentile(sims, 90)    # top 10% of scores
+# def auto_threshold(scores):
+#     sims = [s for (_, _, s) in scores if s is not None and s > 0]
+#     if len(sims) == 0:
+#         return 0.0
+#     return np.percentile(sims, 60)    # top 10% of scores
 
 def match_pairs(pairs, df_A, df_B, sim_func, threshold):
 
+    # Running all comparisons in parallel
     results = Parallel(n_jobs=-1)(
         delayed(compare_pair)(i, j, df_A, df_B, sim_func)
         for i, j in pairs
     )
 
-    # Remove failed comparisons (None)
+    # Removing failed comparisons
     clean_results = [r for r in results if r is not None]
 
     
-    # ----- AUTO-THRESHOLD FOR SMPC -----
+    # Auto-threshold for SMPC   
     is_smpc = "smpc" in sim_func.__name__.lower()
+
+    
     if is_smpc:
-        sims = [s for (_, _, s) in clean_results if s > 0]
+        sims = [sim for (_, _, sim) in clean_results if sim > 0]
         if len(sims) > 0:
-            threshold = np.percentile(sims, 90)   # you can tune 90 to 80/95
+            threshold = np.percentile(sims, 50)   # median, not 90th
         else:
             threshold = 0.0
 

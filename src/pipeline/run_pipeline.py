@@ -73,3 +73,4 @@ def run_pipeline(df_A, df_B, true_matches,
         "f1": f1,
         "pairs": len(pairs)
     }
+
