@@ -50,11 +50,11 @@ experiments = [
 		"encoder": clk_encode, 
 		"blocker": lambda A, B: rule_blocking(A, B, col="block_key")
 	},
-    {
-		"name": "Hybrid + LSH", 
-		"encoder": hybrid_encode, 
-		"blocker": lsh_blocking
-	},
+    # {                             # Taking so much time
+	# 	"name": "Hybrid + LSH", 
+	# 	"encoder": hybrid_encode, 
+	# 	"blocker": lsh_blocking
+	# },
 ]
 # ===============================================================================================
 # 4. Running the experiments
