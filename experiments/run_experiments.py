@@ -1,7 +1,8 @@
 # ===============================================================================================
-# 1. Importing libraries and pipeline components
+# libraries and pipeline components
 import sys
 import os
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -24,6 +25,11 @@ from src.blocking.lsh import lsh_blocking                  # LSH - Locality Sens
 from src.blocking.rule_based import rule_blocking                            # Rule-based blocking  
 from src.matching.similarity import dice_similarity        # Similarity function
 # from src.evaluation.evaluation import evaluate_matches     # Evaluation metrics
+from src.matching.smpc import smpc_dice_similarity
+# from src.matching.similarity import dice_similarity
+# from src.encoding.hybrid import hybrid_encode
+
+
 
 # ===============================================================================================
 
@@ -38,18 +44,25 @@ df_A["block_key"] = df_A["last_name"].str[0]
 df_B["block_key"] = df_B["last_name"].str[0]
 
 # 3. Defining different experiments
-
 experiments = [
     {
 		"name": "Bloom + Rule", 
 		"encoder": bloom_encode, 
-		"blocker": lambda A, B: rule_blocking(A, B, col="block_key")
+		"blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
+        "sim_func": dice_similarity
 	},
     {
 		"name": "CLK + Rule", 
 		"encoder": clk_encode, 
-		"blocker": lambda A, B: rule_blocking(A, B, col="block_key")
+		"blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
+        "sim_func": dice_similarity
 	},
+    {
+        "name": "CLK + Rule + SMPC",
+        "encoder": clk_encode,
+        "blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
+        "sim_func": smpc_dice_similarity
+    },
     # {                             # Taking so much time
 	# 	"name": "Hybrid + LSH", 
 	# 	"encoder": hybrid_encode, 
@@ -70,7 +83,7 @@ for exp in experiments:
         true_matches,
         encoder=exp["encoder"],
         blocker=exp["blocker"],
-        sim_func=dice_similarity,
+        sim_func=exp["sim_func"], 
         threshold=0.85
     )
 
