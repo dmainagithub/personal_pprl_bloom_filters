@@ -1,10 +1,30 @@
 # ===============================================================================================
 # libraries and pipeline components
+# ===============================================================================================
+# These lines of code help resolve the issue of folder paths.
 import sys
 import os
 
-
+# Add project root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# ===============================================================================================
+
+from pathlib import Path
+from src.evaluation.plots import (
+    prepare_labels,
+    plot_roc,
+    plot_pr,
+    plot_threshold_metrics,
+    plot_score_distribution,
+    ensure_dir
+)
+from src.evaluation.plot_helpers import prepare_plot_data
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+PLOT_DIR = BASE_DIR / "results" / "plots"
+ensure_dir(PLOT_DIR)
+# ===============================================================================================
 
 import pandas as pd
 import seaborn as sns
@@ -28,8 +48,6 @@ from src.matching.similarity import dice_similarity        # Similarity function
 from src.matching.smpc import smpc_dice_similarity
 # from src.matching.similarity import dice_similarity
 # from src.encoding.hybrid import hybrid_encode
-
-
 
 # ===============================================================================================
 
@@ -89,6 +107,50 @@ for exp in experiments:
 
     results.append({"experiment": exp["name"], **res})
 
+    # Visualization
+    matches_df = res['matches_df']  
+    true_matches_df = res['true_matches']  
+
+    # Get y_true and y_scores for plots
+    y_true, y_scores = prepare_plot_data(matches_df, true_matches_df)
+
+    
+    # ---- CLEAN experiment name BEFORE plotting ----
+    exp_name = exp["name"].replace(" ", "_").replace("+", "_")
+
+    # exp_name = exp["name"].replace(" ", "_")
+
+
+    plot_roc(
+        y_true, 
+        y_scores, 
+        save_path=PLOT_DIR / f"{exp_name}_roc.png",
+        title=f"{exp['name']} ROC"
+        )
+    plot_pr(
+        y_true, 
+        y_scores, 
+        save_path=PLOT_DIR / f"{exp_name}_pr.png",
+        title=f"{exp['name']} PR"
+    )
+# ===============================================================================================
+    plot_threshold_metrics(
+        y_true,
+        y_scores,
+        save_path=PLOT_DIR / f"{exp_name}_threshold.png"
+    )
+
+    plot_score_distribution(
+        y_true,
+        y_scores,
+        save_path=PLOT_DIR / f"{exp_name}_distribution.png"
+    )
+
+    print(f"[SAVED PLOTS] {exp['name']}")
+    # End of visualzation
+        
+
+    
 
 # ===============================================================================================
 # Saving the results

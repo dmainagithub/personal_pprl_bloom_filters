@@ -26,10 +26,14 @@ def run_pipeline(df_A, df_B, true_matches,
     # ---------------------------------
     pairs = blocker(df_A, df_B)
 
+    # Added these two lines
+    df_A = df_A.reset_index(drop=True)
+    df_B = df_B.reset_index(drop=True)
+
     # ---------------------------------
     # 3. Matching
     # ---------------------------------
-    matches, all_scores = match_pairs(
+    matches, all_scores = match_pairs( # # filtered + all scores
         pairs, df_A, df_B, sim_func, threshold
     )
 
@@ -71,6 +75,8 @@ def run_pipeline(df_A, df_B, true_matches,
         "precision": precision,
         "recall": recall,
         "f1": f1,
-        "pairs": len(pairs)
+        "pairs": len(pairs),
+        'matches_df': matches_df,
+        "true_matches": true_matches  
     }
 
