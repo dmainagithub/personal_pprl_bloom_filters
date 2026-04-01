@@ -30,6 +30,15 @@ personal_pprl_bloom_filters/notebooks_executed/
 ###############################################
 personal_pprl_bloom_filters/visualization/
 
+# Ignore generated plots
+results/plots/
+results/plots/**
+
+# Or even broader:
+results/
+results/**
+
+
 ###############################################
 # Logs
 ###############################################
