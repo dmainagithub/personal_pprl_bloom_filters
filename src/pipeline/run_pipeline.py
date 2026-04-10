@@ -1,3 +1,8 @@
+import sys
+import os
+# Add the project root to Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from src.matching.matcher import match_pairs
 from src.evaluation.evaluate import evaluate
 from src.matching.smpc import smpc_dice_similarity
@@ -26,7 +31,6 @@ def run_pipeline(df_A, df_B, true_matches,
     # ---------------------------------
     pairs = blocker(df_A, df_B)
 
-    # Added these two lines
     df_A = df_A.reset_index(drop=True)
     df_B = df_B.reset_index(drop=True)
 
@@ -42,14 +46,6 @@ def run_pipeline(df_A, df_B, true_matches,
     # Removing any remaining bad rows
     matches_df = matches_df.dropna(subset=["i", "j"])
 
-    # # Ensuring integer indices
-    # matches_df["i"] = matches_df["i"].astype(int)
-    # matches_df["j"] = matches_df["j"].astype(int)
-
-    # # Mapping IDs
-    # matches_df["id_A"] = matches_df["i"].apply(lambda x: df_A.loc[x, "id"])
-    # matches_df["id_B"] = matches_df["j"].apply(lambda x: df_B.loc[x, "id"])
-
     if len(matches_df) == 0:
         # Creating empty structure safely
         matches_df = pd.DataFrame(columns=["id_A", "id_B", "sim"])
@@ -58,13 +54,13 @@ def run_pipeline(df_A, df_B, true_matches,
         matches_df["id_B"] = matches_df["j"].apply(lambda x: df_B.loc[x, "id"])
         matches_df = matches_df[["id_A", "id_B", "sim"]]
 
-    # Debugging
-    pred_pairs = set(matches_df["id_A"].astype(str) + "_" + matches_df["id_B"].astype(str))
-    true_pairs = set(true_matches["id_A"].astype(str) + "_" + true_matches["id_B"].astype(str))
+    # # Debugging
+    # pred_pairs = set(matches_df["id_A"].astype(str) + "_" + matches_df["id_B"].astype(str))
+    # true_pairs = set(true_matches["id_A"].astype(str) + "_" + true_matches["id_B"].astype(str))
 
-    print("Predicted pairs:", len(pred_pairs))
-    print("True pairs:", len(true_pairs))
-    print("Overlap:", len(pred_pairs & true_pairs))
+    # print("Predicted pairs:", len(pred_pairs))
+    # print("True pairs:", len(true_pairs))
+    # print("Overlap:", len(pred_pairs & true_pairs))
 
     # ---------------------------------
     # 4. Evaluation

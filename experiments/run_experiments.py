@@ -39,7 +39,7 @@ from pathlib import Path
 # pipeline components
 from src.pipeline.run_pipeline import run_pipeline
 from src.encoding.bloom import bloom_encode                # Bloom filter encoding
-from src.encoding.clk import clk_encode                    # cryptographic long-term key encoding
+from src.encoding.clk import clk_encode, clk_encode_enhanced                    # cryptographic long-term key encoding
 from src.encoding.hybrid import hybrid_encode              # Combining encoding strategies          
 from src.blocking.lsh import lsh_blocking                  # LSH - Locality Sensitive Hashing
 from src.blocking.rule_based import rule_blocking                            # Rule-based blocking  
@@ -70,14 +70,20 @@ experiments = [
         "sim_func": dice_similarity
 	},
     {
-		"name": "CLK + Rule", 
+		"name": "CLK-basic + Rule", 
 		"encoder": clk_encode, 
 		"blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
         "sim_func": dice_similarity
 	},
     {
+		"name": "CLK + Rule", 
+		"encoder": clk_encode_enhanced, 
+		"blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
+        "sim_func": dice_similarity
+	},
+    {
         "name": "CLK + Rule + SMPC",
-        "encoder": clk_encode,
+        "encoder": clk_encode_enhanced,
         "blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
         "sim_func": smpc_dice_similarity
     },
@@ -90,6 +96,7 @@ experiments = [
 # ===============================================================================================
 # 4. Running the experiments
 results = []
+plot_data = {} # This one will be used to plot PPRL techniques comparison plots at the end.
 
 for exp in experiments:
 
@@ -119,6 +126,7 @@ for exp in experiments:
     exp_name = exp["name"].replace(" ", "_").replace("+", "_")
 
     # exp_name = exp["name"].replace(" ", "_")
+    plot_data[exp_name] = (y_true, y_scores)  # Storing for later comparison plots
 
 
     plot_roc(
@@ -148,10 +156,48 @@ for exp in experiments:
 
     print(f"[SAVED PLOTS] {exp['name']}")
     # End of visualzation
-        
 
-    
+# ===============================================================================================
+# ===============================================================================================
+    # Comparison plots (all techniques in one plot)
+# ===============================================================================================
+# ===============================================================================================
+    # ROC curves  156 - 173  #         
+# ===============================================================================================
+    import matplotlib.pyplot as plt
+    from sklearn.metrics import roc_curve, auc
 
+    plt.figure(figsize=(8,6))
+
+    for name, (y_true, y_scores) in plot_data.items():
+        fpr, tpr, _ = roc_curve(y_true, y_scores)
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, label=f"{name} (AUC={roc_auc:.2f})")
+
+    plt.plot([0,1], [0,1], 'k--', label='Random')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Comparative ROC Curves of PPRL Techniques')
+    plt.legend(loc='lower right')
+    plt.grid(True)
+    plt.savefig(PLOT_DIR / "comparative_roc.png")
+    plt.show()
+# ===============================================================================================
+    from sklearn.metrics import precision_recall_curve
+
+    plt.figure(figsize=(8,6))
+
+    for name, (y_true, y_scores) in plot_data.items():
+        precision, recall, _ = precision_recall_curve(y_true, y_scores)
+        plt.plot(recall, precision, label=name)
+
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Comparative Precision-Recall Curves of PPRL Techniques')
+    plt.legend(loc='lower left')
+    plt.grid(True)
+    plt.savefig(PLOT_DIR / "comparative_pr.png")
+    plt.show() 
 # ===============================================================================================
 # Saving the results
 results_df = pd.DataFrame(results)

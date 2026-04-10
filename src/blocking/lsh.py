@@ -6,22 +6,8 @@ def bf_to_array(bf):
         return np.array([int(x) for x in bf])
     return np.array(bf)
 
-
-import hashlib
-import numpy as np
-
-def bf_to_array(bf):
-    """Convert Bloom filter or bitstring into a NumPy array."""
-    if isinstance(bf, str):
-        return np.array([int(x) for x in bf])
-    return np.array(bf)
-
 def compute_lsh_blocks(df, bands=20, rows_per_band=5, column="encoded"):
-    """
-    Compute LSH blocks for a single dataframe.
-    Returns a dictionary:
-        { block_key : [row_indices] }
-    """
+    
     blocks = {}
 
     for idx, row in df.iterrows():
@@ -49,10 +35,6 @@ def compute_lsh_blocks(df, bands=20, rows_per_band=5, column="encoded"):
 
 
 def lsh_blocking(df_A, df_B, bands=20, rows_per_band=5, column="encoded"):
-    """
-    LSH blocking across two datasets.
-    Returns list of (i, j) index pairs.
-    """
 
     A_blocks = compute_lsh_blocks(df_A, bands, rows_per_band, column)
     B_blocks = compute_lsh_blocks(df_B, bands, rows_per_band, column)
@@ -67,6 +49,24 @@ def lsh_blocking(df_A, df_B, bands=20, rows_per_band=5, column="encoded"):
                     pairs.append((i, j))
 
     return pairs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # # Original
