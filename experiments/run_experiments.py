@@ -82,6 +82,12 @@ experiments = [
         "sim_func": dice_similarity
 	},
     {
+		"name": "CLK + LSH", 
+		"encoder": clk_encode_enhanced, 
+		"blocker": lambda A, B: lsh_blocking(A, B, bands=20, rows_per_band=5),
+        "sim_func": dice_similarity
+	},
+    {
         "name": "CLK + Rule + SMPC",
         "encoder": clk_encode_enhanced,
         "blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
@@ -90,8 +96,9 @@ experiments = [
     # {                             # Taking so much time
 	# 	"name": "Hybrid + LSH", 
 	# 	"encoder": hybrid_encode, 
-	# 	"blocker": lsh_blocking
+	# 	"blocker": lambda A, B: lsh_blocking(A, B, bands=20, rows_per_band=5),
 	# },
+
 ]
 # ===============================================================================================
 # 4. Running the experiments
@@ -122,10 +129,9 @@ for exp in experiments:
     y_true, y_scores = prepare_plot_data(matches_df, true_matches_df)
 
     
-    # ---- CLEAN experiment name BEFORE plotting ----
+    # ---- cleaning experiment name BEFORE plotting ----
     exp_name = exp["name"].replace(" ", "_").replace("+", "_")
 
-    # exp_name = exp["name"].replace(" ", "_")
     plot_data[exp_name] = (y_true, y_scores)  # Storing for later comparison plots
 
 

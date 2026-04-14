@@ -4,9 +4,7 @@ from src.encoding.clk import clk_encode
 # Bloom filter encoding
 
 def hybrid_encode(record):
-    """
-    Example: combine CLK + individual field encoding
-    """
+
     clk = clk_encode(record)
     
     # Add extra signal (e.g., postcode)
