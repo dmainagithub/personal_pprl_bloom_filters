@@ -1,89 +1,52 @@
-# src.matching.smpc
+# libraries and pipeline components
+# ===============================================================================================
+# These lines of code help resolve the issue of folder paths.
+import sys
+import os
+
+# Add project root to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# ===============================================================================================
+
 
 import numpy as np
+from bitarray import bitarray
+from src.matching.base_similarity import BaseSimilarity
 
-def secret_share(vec, modulus=2**32):
-    vec = np.array(vec, dtype=np.int64)
-
-    if vec.ndim == 0:
-        vec = np.array([vec])
-
-    share1 = np.random.randint(0, modulus, size=len(vec), dtype=np.int64)
-    share2 = (vec - share1) % modulus
-    return share1, share2
-
-def reconstruct(share1, share2, modulus=2**32):
-    return (share1 + share2) % modulus
-
-def secure_and_share(share1_a, share2_a, share1_b, share2_b, modulus=2**32):
-
-    total_share1 = (share1_a + share1_b) % modulus
-    total_share2 = (share2_a + share2_b) % modulus
-    return total_share1, total_share2
-
-def secure_mul(share1_a, share2_a, share1_b, share2_b, modulus=2**32):
-
-    mul_share1 = (share1_a * share1_b) % modulus
+class SMPCDiceSimilarity(BaseSimilarity):
     
-    mul_share2 = (share2_a * share2_b) % modulus
+    def __init__(self, epsilon: float = 0.5, use_noise: bool = True):
+        self.epsilon = epsilon  # Privacy budget
+        self.use_noise = use_noise
     
-    return mul_share1, mul_share2
+    def compute(self, bf1: bitarray, bf2: bitarray) -> float:
+        # Convert to bitarray if needed
+        bf1 = bitarray(bf1) if not isinstance(bf1, bitarray) else bf1
+        bf2 = bitarray(bf2) if not isinstance(bf2, bitarray) else bf2
+        
+        # Standard Dice computation
+        intersection = (bf1 & bf2).count()
+        total_set_bits = bf1.count() + bf2.count()
+        
+        if total_set_bits == 0:
+            dice = 0.0
+        else:
+            dice = (2.0 * intersection) / total_set_bits
+        
+        # Add Laplace noise for differential privacy
+        if self.use_noise:
+            sensitivity = 2.0 / max(total_set_bits, 1)
+            noise = np.random.laplace(0, sensitivity / self.epsilon)
+            dice = max(0.0, min(1.0, dice + noise))
+        
+        return dice
 
-def smpc_dice_similarity(bf1, bf2):
-
-    # Convert to numpy arrays 
-    if not isinstance(bf1, np.ndarray):
-        bf1 = np.array(bf1)
-    if not isinstance(bf2, np.ndarray):
-        bf2 = np.array(bf2)
+class PSIBasedSimilarity(BaseSimilarity):
     
-    # Ensure numeric and binary
-    bf1 = bf1.astype(np.int8)
-    bf2 = bf2.astype(np.int8)
+    def __init__(self, psi_matcher):
+        self.psi_matcher = psi_matcher
     
-    # Compute intersection (AND)
-    intersection = np.sum(bf1 & bf2)
-    
-    # Compute sums (number of 1s)
-    sum1 = np.sum(bf1)
-    sum2 = np.sum(bf2)
-    
-    # Dice coefficient
-    denominator = sum1 + sum2
-    if denominator == 0:
-        return 0.0
-    
-    dice = (2.0 * intersection) / denominator
-    
-    # Ensure valid return value
-    return float(np.clip(dice, 0.0, 1.0))
-
-
-
-# def secret_share(vec):
-#     share1 = np.random.randint(0, 2, size=len(vec))
-#     share2 = (vec - share1) % 2
-#     return share1, share2
-
-# def secure_dot_product(a1, a2, b1, b2):
-#     return np.dot(a1 + a2, b1 + b2)
-
-
-# def smpc_dice_similarity(bf1, bf2):
-#     bf1 = np.array(bf1)
-#     bf2 = np.array(bf2)
-
-#     # Secret share both vectors
-#     a1, a2 = secret_share(bf1)
-#     b1, b2 = secret_share(bf2)
-
-#     # Secure intersection
-#     intersection = secure_dot_product(a1, a2, b1, b2)
-
-#     # Secure sums
-#     sum1 = bf1.sum()
-#     sum2 = bf2.sum()
-
-#     dice = (2 * intersection) / (sum1 + sum2 + 1e-10)
-
-#     return float(dice)
+    def compute(self, enc1, enc2) -> float:
+        # This would use the PSI matcher to compute secure intersection
+        # Simplified for now
+        return self.psi_matcher.compute_similarity(enc1, enc2)

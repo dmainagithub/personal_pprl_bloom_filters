@@ -38,14 +38,19 @@ from pathlib import Path
 
 # pipeline components
 from src.pipeline.run_pipeline import run_pipeline
+from src.pipeline.smpc_pipeline import SMPCPipeline
+from src.matching.smpc import SMPCDiceSimilarity
+
+
 from src.encoding.bloom import bloom_encode                # Bloom filter encoding
 from src.encoding.clk import clk_encode, clk_encode_enhanced                    # cryptographic long-term key encoding
 from src.encoding.hybrid import hybrid_encode              # Combining encoding strategies          
+from src.encoding.smpc import SMPCBloomEncoder 
 from src.blocking.lsh import lsh_blocking                  # LSH - Locality Sensitive Hashing
-from src.blocking.rule_based import rule_blocking                            # Rule-based blocking  
+from src.blocking.rule_based import rule_blocking, RuleBasedBlocker                            # Rule-based blocking  
 from src.matching.similarity import dice_similarity        # Similarity function
 # from src.evaluation.evaluation import evaluate_matches     # Evaluation metrics
-from src.matching.smpc import smpc_dice_similarity
+# from src.matching.smpc import smpc_dice_similarity
 # from src.matching.similarity import dice_similarity
 # from src.encoding.hybrid import hybrid_encode
 
@@ -83,16 +88,24 @@ experiments = [
 	},
     {
 		"name": "CLK + LSH", 
-		"encoder": clk_encode_enhanced, 
+		"encoder": SMPCBloomEncoder(party_id='A', shared_secret="shared_secret_example"), # clk_encode_enhanced
 		"blocker": lambda A, B: lsh_blocking(A, B, bands=20, rows_per_band=5),
         "sim_func": dice_similarity
 	},
     {
-        "name": "CLK + Rule + SMPC",
-        "encoder": clk_encode_enhanced,
-        "blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
-        "sim_func": smpc_dice_similarity
-    },
+        "name": "SMPC_Bloom_PSI",
+        "pipeline": SMPCPipeline,
+        "encoder": SMPCBloomEncoder(party_id='A', shared_secret="test_secret"),
+        "blocker": RuleBasedBlocker(blocking_col="block_key"),
+        "sim_func": SMPCDiceSimilarity(epsilon=0.5),
+        "threshold": 0.85
+    }
+    # {
+    #     "name": "CLK + Rule + SMPC",
+    #     "encoder": clk_encode_enhanced,
+    #     "blocker": lambda A, B: rule_blocking(A, B, col="block_key"),
+    #     "sim_func": smpc_dice_similarity
+    # },
     # {                             # Taking so much time
 	# 	"name": "Hybrid + LSH", 
 	# 	"encoder": hybrid_encode, 

@@ -1,11 +1,25 @@
+# ===============================================================================================
+# libraries and pipeline components
+# ===============================================================================================
+# These lines of code help resolve the issue of folder paths.
+import sys
+import os
+
+# Add project root to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# ===============================================================================================
+
+
 from bitarray import bitarray
 import hashlib
 
-def get_qgrams(text, q=2):
-    if not isinstance(text, str):
-        text = str(text) if text is not None else ""
-    text = text.replace(" ", "")
-    return [text[i:i+q] for i in range(len(text) - q + 1)]
+from src.utils.helpers import get_qgrams
+
+# def get_qgrams(text, q=2):
+#     if not isinstance(text, str):
+#         text = str(text) if text is not None else ""
+#     text = text.replace(" ", "")
+#     return [text[i:i+q] for i in range(len(text) - q + 1)]
 
 def bloom_encode(text, size=1024, num_hashes=5):
     # Creating a blank memory

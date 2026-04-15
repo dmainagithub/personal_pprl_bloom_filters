@@ -1,3 +1,13 @@
+# libraries and pipeline components
+# ===============================================================================================
+# These lines of code help resolve the issue of folder paths.
+import sys
+import os
+
+# Add project root to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# ===============================================================================================
+
 import sys
 import os
 # Add the project root to Python path
@@ -5,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from src.matching.matcher import match_pairs
 from src.evaluation.evaluate import evaluate
-from src.matching.smpc import smpc_dice_similarity
+from src.pipeline.smpc_pipeline import SMPCPipeline
 from src.matching.similarity import dice_similarity
 from src.blocking.rule_based import rule_blocking
 from src.encoding.bloom import bloom_encode

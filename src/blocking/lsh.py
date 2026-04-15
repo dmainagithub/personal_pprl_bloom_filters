@@ -1,5 +1,6 @@
 import hashlib
 import numpy as np
+from typing import Set, Tuple, List, Dict 
 
 def bf_to_array(bf):
     if isinstance(bf, str):

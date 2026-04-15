@@ -29,17 +29,25 @@ def compare_pair(i, j, df_A, df_B, sim_func):
             bf1 = to_bitarray(bf1)
             bf2 = to_bitarray(bf2)
         except Exception as e:
-            print("COMPAIR-PAIRS: ARBITARRAY ERROR:", e, bf1, bf2)
-            
+            print("COMPAIR-PAIRS: ARBITARRAY ERROR:", e, bf1, bf2)            
             return None
 
         # Compute similarity
         sim = sim_func(bf1, bf2)
-        
-        # # ---- Debug SMPC similarity ----
-        # if "smpc" in sim_func.__name__.lower():
-        #     print(f"SMPC DEBUG → i:{i}, j:{j}, sim:{sim}")
 
+        # -----------------------------------------------------------------
+        # FIXED: Debug SMPC similarity - check class name for instances
+        # Check if it's an SMPC similarity function/instance
+        is_smpc = False
+        if hasattr(sim_func, '__name__'):
+            is_smpc = "smpc" in sim_func.__name__.lower()
+        else:
+            is_smpc = "smpc" in sim_func.__class__.__name__.lower()
+        
+        if is_smpc:
+            print(f"SMPC DEBUG → i:{i}, j:{j}, sim:{sim}")
+            # -----------------------------------------------------------------
+        
         # Catch NaN similarity
         if sim is None or sim != sim:  # sim != sim detects NaN
             return None
@@ -49,12 +57,6 @@ def compare_pair(i, j, df_A, df_B, sim_func):
     except Exception as e:
         print("COMPAIR-PAIRS: ", e, "i:", i, "j:", j)
         return None
-
-# def auto_threshold(scores):
-#     sims = [s for (_, _, s) in scores if s is not None and s > 0]
-#     if len(sims) == 0:
-#         return 0.0
-#     return np.percentile(sims, 60)    # top 10% of scores
 
 def match_pairs(pairs, df_A, df_B, sim_func, threshold):
 
@@ -69,7 +71,14 @@ def match_pairs(pairs, df_A, df_B, sim_func, threshold):
 
     
     # Auto-threshold for SMPC   
-    is_smpc = "smpc" in sim_func.__name__.lower()
+    # is_smpc = "smpc" in sim_func.__name__.lower()
+    is_smpc = False
+    if hasattr(sim_func, '__name__'):
+        # It's a function
+        is_smpc = "smpc" in sim_func.__name__.lower()
+    else:
+        # It's a class instance - check the class name
+        is_smpc = "smpc" in sim_func.__class__.__name__.lower()
 
     
     if is_smpc:

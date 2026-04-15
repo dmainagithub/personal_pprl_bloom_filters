@@ -1,6 +1,14 @@
 import yaml
 from pathlib import Path
 
+def get_qgrams(text, q=2):
+    if not isinstance(text, str):
+        text = str(text) if text is not None else ""
+    text = text.replace(" ", "")
+    return [text[i:i+q] for i in range(len(text) - q + 1)]
+
+
+
 def load_paths(config_filename="config.yaml"):
     """
     Load project paths from config.yaml regardless of where the notebook is run.
