@@ -110,11 +110,6 @@ def match_pairs(pairs, df_A, df_B, sim_func, threshold):
             except Exception:
                 # Skip bad indices safely
                 continue
-    # # Debugging prints        
-    # print("MATCH-PAIRS: Total pairs:", len(pairs))
-    # print("MATCH-PAIRS: Raw results:", len(results))
-    # print("MATCH-PAIRS: Clean results:", len(clean_results))
-    # print("MATCH-PAIRS: Final matches:", len(matches))            
-    
+   
     return matches, clean_results  # filtered + all scores
 

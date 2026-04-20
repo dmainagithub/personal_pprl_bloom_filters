@@ -64,14 +64,6 @@ def run_pipeline(df_A, df_B, true_matches,
         matches_df["id_B"] = matches_df["j"].apply(lambda x: df_B.loc[x, "id"])
         matches_df = matches_df[["id_A", "id_B", "sim"]]
 
-    # # Debugging
-    # pred_pairs = set(matches_df["id_A"].astype(str) + "_" + matches_df["id_B"].astype(str))
-    # true_pairs = set(true_matches["id_A"].astype(str) + "_" + true_matches["id_B"].astype(str))
-
-    # print("Predicted pairs:", len(pred_pairs))
-    # print("True pairs:", len(true_pairs))
-    # print("Overlap:", len(pred_pairs & true_pairs))
-
     # ---------------------------------
     # 4. Evaluation
     # ---------------------------------
